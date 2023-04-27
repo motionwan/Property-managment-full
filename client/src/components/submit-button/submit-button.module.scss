@@ -1,0 +1,24 @@
+.root {
+}
+.button {
+  background-color: #6e27a7;
+  background-image: none;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: cover;
+  background-attachment: scroll;
+  background-origin: padding-box;
+  background-clip: border-box;
+  border-radius: 0.4em;
+  padding: 0.8em 2em;
+  color: white;
+  direction: ltr;
+  text-align: start;
+  border: 0px solid black;
+  margin-top: 2em;
+  &:hover {
+    background-color: #9035d9;
+    cursor: pointer;
+  }
+  margin-bottom: 2em;
+}

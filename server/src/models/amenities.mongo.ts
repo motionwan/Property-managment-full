@@ -1,19 +1,19 @@
 import mongoose, { Document } from 'mongoose';
-import { Hotel } from './hotels.mongo';
+import { Building } from './buildings.mongo';
 
 export interface Amenity extends Document {
   name: String;
   condition: string;
-  hotelId: Hotel['_id'];
+  buildingId: Building['_id'];
 }
 
 const aminitySchema = new mongoose.Schema<Amenity>({
   name: { type: String, required: true },
   condition: { type: String, required: true },
 
-  hotelId: {
+  buildingId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hotel',
+    ref: 'Building',
     required: true,
   },
 });

@@ -1,0 +1,29 @@
+.mainContainer {
+  display: flex;
+  width: 100%;
+  min-height: 75vh;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.container {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 50vw;
+  min-height: 20rem;
+  padding: 20px;
+}
+
+.inputBox {
+  width: 100%;
+  padding: 20px;
+}
+
+.buttonContainer {
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 40px 0;
+  text-decoration: none;
+}

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import User from '../../models/users.mongo';
-import Hotel from '../../models/hotels.mongo';
+import Building from '../../models/buildings.mongo';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import sendMail from '../../utils/email';
 
@@ -12,7 +12,8 @@ interface TokenPayload extends JwtPayload {
 class UserController {
   async register(req: Request, res: Response) {
     try {
-      const { firstName, lastName, email, password, role, hotelId } = req.body;
+      const { firstName, lastName, email, password, role, buildingId } =
+        req.body;
 
       // check if user is already registered
       const userExists = await User.findOne({ email });
@@ -31,13 +32,13 @@ class UserController {
         email,
         password: hashedPassword,
         role,
-        hotelId,
+        buildingId,
       });
 
       await user.save(); // save the user
 
-      //find user's hotel an pull out the settings
-      const hotel = await Hotel.findById(user.hotelId);
+      //find user's building an pull out the settings
+      const building = await Building.findById(user.buildingId);
 
       // send verification email to the new user
       const token = jwt.sign({ email }, process.env.ACCESS_TOKEN as string, {
@@ -46,14 +47,14 @@ class UserController {
       const verificationLink = `http://localhost:3000/users/verify/${token}`;
 
       sendMail(
-        hotel!.settings.host,
-        hotel!.email,
-        hotel!.settings.service,
-        hotel!.email,
-        hotel!.settings.emailPassword,
+        building!.settings.host,
+        building!.email,
+        building!.settings.service,
+        building!.email,
+        building!.settings.emailPassword,
         user.email,
         'Please verify your email address',
-        `<p>Hi ${user.lastName}  ',</p><p>Thank you for signing up for our hotel. Please click on the button below to confirm your email address and activate your account.</p><a href=${verificationLink} style="background-color: green; color: white; padding: 10px; text-decoration: none;">Confirm Registration</a><p>If you did not request this, please ignore this email.</p><p>Regards,</p><p>${hotel?.name} Team</p>`
+        `<p>Hi ${user.lastName}  ',</p><p>Thank you for signing up for our building. Please click on the button below to confirm your email address and activate your account.</p><a href=${verificationLink} style="background-color: green; color: white; padding: 10px; text-decoration: none;">Confirm Registration</a><p>If you did not request this, please ignore this email.</p><p>Regards,</p><p>${building?.name} Team</p>`
       );
       if (!sendMail) {
         res.status(400).json({ message: 'Email not sent' });
@@ -106,18 +107,18 @@ class UserController {
       });
       const resetPasswordLink = `http://localhost:3000/users/reset-password/${token}`;
       console.log(token);
-      //find user's hotel an pull out the settings
-      const hotel = await Hotel.findById(user.hotelId);
+      //find user's building an pull out the settings
+      const building = await Building.findById(user.buildingId);
 
       sendMail(
-        hotel!.settings.host,
-        hotel!.email,
-        hotel!.settings.service,
-        hotel!.email,
-        hotel!.settings.emailPassword,
+        building!.settings.host,
+        building!.email,
+        building!.settings.service,
+        building!.email,
+        building!.settings.emailPassword,
         user.email,
         'Please verify your email address',
-        `Hi ${user.lastName}  ',You have requested to reset your password for ${hotel?.name}. Please click on the button below to reset your password.</p><a href=${resetPasswordLink} style="background-color: green; color: white; padding: 10px; text-decoration: none;">Reset Password</a><p>If you did not request this, please ignore this email.</p><p>Regards,</p><p>${hotel?.name} Team</p>`
+        `Hi ${user.lastName}  ',You have requested to reset your password for ${building?.name}. Please click on the button below to reset your password.</p><a href=${resetPasswordLink} style="background-color: green; color: white; padding: 10px; text-decoration: none;">Reset Password</a><p>If you did not request this, please ignore this email.</p><p>Regards,</p><p>${building?.name} Team</p>`
       );
 
       res
@@ -215,7 +216,7 @@ class UserController {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
-        hotelId: user.hotelId,
+        buildingId: user.buildingId,
         userId: user._id,
       });
     } catch (err: any) {

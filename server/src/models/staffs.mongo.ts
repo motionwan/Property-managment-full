@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-import { Hotel } from './hotels.mongo';
+import { Hotel } from './buildings.mongo';
 
 interface Staff extends Document {
   firstName: string;

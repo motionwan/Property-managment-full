@@ -36,7 +36,7 @@ class Refresh {
             lastName: user?.lastName,
             email: user?.email,
             role: user?.role,
-            hotelId: user?.hotelId,
+            buildingId: user?.buildingId,
             userId: user?._id,
           });
         }

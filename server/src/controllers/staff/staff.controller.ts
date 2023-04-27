@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import Staff from '../../models/staffs.mongo';
-import Hotel from '../../models/hotels.mongo';
+import Hotel from '../../models/buildings.mongo';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import sendMail from '../../utils/email';
 

@@ -38,7 +38,7 @@ mongoose
 
 // import routes
 
-import hotelRouter from './routers/Hotels/hotels.router';
+import hotelRouter from './routers/buildings/hotels.router';
 import roomRouter from './routers/Rooms/rooms.router';
 import houseKeepingRouter from './routers/houseKeeping/houseKeeping.router';
 import usersRouter from './routers/users/users.router';

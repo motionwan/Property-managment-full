@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-import { Hotel } from './hotels.mongo';
+import { Building } from './buildings.mongo';
 import { Amenity } from './amenities.mongo';
 
 export interface Room extends Document {
@@ -9,7 +9,7 @@ export interface Room extends Document {
   capacity: number;
   amenities: Amenity['_id'][];
   roomPics: string[];
-  hotelId: Hotel['_id'];
+  buildingId: Building['_id'];
 }
 
 const roomSchema = new mongoose.Schema<Room>({
@@ -21,9 +21,9 @@ const roomSchema = new mongoose.Schema<Room>({
     { type: mongoose.Schema.Types.ObjectId, ref: 'Amenity', required: true },
   ],
   roomPics: [{ type: String, required: true }],
-  hotelId: {
+  buildingId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hotel',
+    ref: 'Building',
     required: true,
   },
 });

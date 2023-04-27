@@ -1,12 +1,12 @@
 import mongoose, { Document } from 'mongoose';
-import { Hotel } from './hotels.mongo';
+import { Building } from './buildings.mongo';
 export interface Customer extends Document {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   role: string;
-  hotelId: Hotel['_id'];
+  buildingId: Building['_id'];
   verified: boolean;
   accessToken: string;
   refreshToken: string;
@@ -33,9 +33,9 @@ const Customer = new mongoose.Schema<Customer>({
     ],
     default: 'guest',
   },
-  hotelId: {
+  buildingId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hotel',
+    ref: 'Building',
     required: true,
   },
   verified: { type: Boolean, default: false },

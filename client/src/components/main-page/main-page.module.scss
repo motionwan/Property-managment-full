@@ -1,0 +1,11 @@
+.root {
+  display: flex;
+  width: 100%;
+}
+.main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px;
+  z-index: 0;
+  margin-top: 3.5rem;
+}
