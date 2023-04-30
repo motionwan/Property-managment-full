@@ -1,32 +1,37 @@
-import mongoose, { Document } from 'mongoose';
-import { Building } from './buildings.mongo';
-import { Amenity } from './amenities.mongo';
+import mongoose, { Schema, Types, Document } from 'mongoose';
 
 export interface Room extends Document {
-  roomNumber: string;
+  roomNumber?: string;
   type: string;
   price: number;
   capacity: number;
-  amenities: Amenity['_id'][];
-  roomPics: string[];
-  buildingId: Building['_id'];
+  occupied: boolean;
+  checkInTime: string;
+  checkOutTime: string;
+  devices: string[]; // an array of devices' connectionIds
+  //roomPics: string[];
+  buildingId: Types.ObjectId;
 }
 
-const roomSchema = new mongoose.Schema<Room>({
-  roomNumber: { type: String, unique: true, required: true },
-  price: { type: Number, required: true },
-  capacity: { type: Number, required: true },
-  type: { type: String, required: true },
-  amenities: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Amenity', required: true },
-  ],
-  roomPics: [{ type: String, required: true }],
-  buildingId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Building',
-    required: true,
+const roomSchema = new mongoose.Schema<Room>(
+  {
+    roomNumber: { type: String, unique: true },
+    price: { type: Number, required: true },
+    capacity: { type: Number, required: true },
+    type: { type: String, required: true },
+    occupied: { type: Boolean, required: true, default: false },
+    checkInTime: { type: String, required: true },
+    checkOutTime: { type: String, required: true },
+    devices: [{ type: String, required: true }],
+    //roomPics: [{ type: String, required: true }],
+    buildingId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Building',
+      required: true,
+    },
   },
-});
+  { timestamps: true }
+);
 
 const RoomModel = mongoose.model<Room>('Room', roomSchema);
 

@@ -9,8 +9,6 @@ export interface Building extends Document {
   logo: string;
   email: string;
   country: string;
-  createdAt: Date;
-  timestamps: Date;
   settings: {
     host: string;
     service: string;
@@ -31,7 +29,6 @@ const buildingSchema = new mongoose.Schema<Building>(
     logo: { type: String },
     email: { type: String, required: true, lowercase: true, unique: true },
     country: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
     settings: {
       host: { type: String },
       service: { type: String },

@@ -9,7 +9,6 @@ class BuildingController {
         req.body;
 
       let logo: string = '';
-
       if (req.file) {
         logo = req.file.path;
       }
@@ -48,7 +47,6 @@ class BuildingController {
     }
   }
 
-  // Update a single building by id
   // Update a single building by id
   async update(req: Request, res: Response) {
     try {

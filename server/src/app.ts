@@ -38,15 +38,15 @@ mongoose
 
 // import routes
 
-import hotelRouter from './routers/buildings/hotels.router';
-import roomRouter from './routers/Rooms/rooms.router';
+import buildingRouter from './routers/buildings/buildings.router';
+import roomRouter from './routers/rooms/rooms.router';
 import houseKeepingRouter from './routers/houseKeeping/houseKeeping.router';
 import usersRouter from './routers/users/users.router';
 import refreshRouter from './routers/Refresh/refresh.router';
-import amenityRouter from './routers/Amenities/amenities.router';
+import amenityRouter from './routers/devices/devices.router';
 import bookingRouter from './routers/bookings/bookings.router';
 
-app.use('/hotel', hotelRouter);
+app.use('/building', buildingRouter);
 app.use('/room', roomRouter);
 app.use('/house-keeping', houseKeepingRouter);
 app.use('/refresh', refreshRouter);
