@@ -28,17 +28,47 @@ class DeviceController {
   // Create a new device
   async create(req: Request, res: Response) {
     try {
-      const { type, roomId, status, buildingId } = req.body;
+      const {
+        type,
+        model,
+        gang,
+        additionalAttributes,
+        name,
+        roomId,
+        buildingId,
+      } = req.body;
       const device = new DeviceModel({
         type,
         roomId,
-        status,
+        model,
+        gang,
+        additionalAttributes,
+        name,
         buildingId,
       });
       await device.save();
-      res.status(201).send(device);
+      res.status(201).json({
+        type,
+        roomId,
+        model,
+        gang,
+        additionalAttributes,
+        name,
+        connectionId: device.connectionId,
+      });
+
+      console.log({
+        type,
+        roomId,
+        model,
+        gang,
+        additionalAttributes,
+        name,
+        connectionId: device.connectionId,
+      });
     } catch (err: any) {
-      res.status(400).send({ message: err.message });
+      console.log(err);
+      res.status(400).json({ message: err.message });
     }
   }
 
@@ -46,10 +76,18 @@ class DeviceController {
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { type, roomId, status, buildingId } = req.body;
+      const {
+        type,
+        roomId,
+        model,
+        gang,
+        additionalAttributes,
+        name,
+        buildingId,
+      } = req.body;
       const device = await DeviceModel.findByIdAndUpdate(
         id,
-        { type, roomId, status, buildingId },
+        { type, roomId, model, gang, additionalAttributes, name, buildingId },
         {
           new: true,
           runValidators: true,

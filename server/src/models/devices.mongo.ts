@@ -6,12 +6,12 @@ export interface Device extends Document {
   type: string;
   model: string;
   name?: string;
+  gang?: number;
+  additionalAttributes: Record<string, any>;
   roomId?: Room['_id'];
   status: boolean;
   buildingId?: Building['_id'];
-  gang: number;
-  connectionId: string;
-  additionalAttributes: Record<string, any>;
+  connectionId?: string;
 }
 
 const deviceSchema = new Schema<Device>(
@@ -19,9 +19,22 @@ const deviceSchema = new Schema<Device>(
     type: { type: String, required: true },
     name: { type: String },
     model: { type: String, required: true },
-    status: { type: Boolean, required: true, default: false },
+    status: {
+      type: Schema.Types.Mixed,
+      required: true,
+      default: function () {
+        if (this.gang) {
+          const gangsStatus: any = {};
+          for (let i = 1; i <= this.gang; i++) {
+            gangsStatus[`gang${i}`] = false;
+          }
+          return gangsStatus;
+        }
+        return {};
+      },
+    },
     gang: { type: Number },
-    connectionId: { type: String, required: true, unique: true },
+    connectionId: { type: String, unique: true },
     buildingId: {
       type: Schema.Types.ObjectId,
       ref: 'Building',
