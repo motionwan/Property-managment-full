@@ -1,0 +1,13 @@
+@hostname = http://localhost:3002
+
+//create amenity
+
+#####
+post {{hostname}}/devices
+Content-Type: application/json
+
+{
+    "type":"switch",
+    "name":"room switch",
+    "gang":2
+}

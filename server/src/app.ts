@@ -45,6 +45,7 @@ import usersRouter from './routers/users/users.router';
 import refreshRouter from './routers/Refresh/refresh.router';
 import deviceRouter from './routers/devices/devices.router';
 import bookingRouter from './routers/bookings/bookings.router';
+import deviceControlRouter from './routers/device-control/device-control.router';
 
 app.use('/building', buildingRouter);
 app.use('/room', roomRouter);
@@ -53,5 +54,6 @@ app.use('/refresh', refreshRouter);
 app.use('/users', usersRouter);
 app.use('/device', deviceRouter);
 app.use('/booking', bookingRouter);
+app.use('/esp', deviceControlRouter);
 
 export default app;
