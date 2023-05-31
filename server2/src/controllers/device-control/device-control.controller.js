@@ -7,63 +7,132 @@ config();
 const mqttUrl = process.env.MQTT_URL || 'mqtt://localhost';
 const mqttClient = mqtt.connect(mqttUrl);
 
-const mqttTopicGang1 = 'devices/switch/gang1'; // MQTT topic for pinGang1
-const mqttTopicGang2 = 'devices/switch/gang2'; // MQTT topic for pinGang2
-const mqttTopicConnections = 'devices/connections';
-
-// Handle MQTT connection
+// Connect to the MQTT broker
 mqttClient.on('connect', () => {
   console.log('Connected to MQTT broker');
-  // Subscribe to topics
-  mqttClient.subscribe(mqttTopicConnections);
 
-  // Subscribe to topics
-  mqttClient.subscribe(mqttTopicGang1);
-  mqttClient.subscribe(mqttTopicGang2);
+  // Subscribe to dynamic topics with a wildcard based on the connectionId and gangNumber
+  mqttClient.subscribe('/devices/+/gangs/+/+', (err) => {
+    if (err) {
+      console.error('Error subscribing to MQTT topic', err);
+    } else {
+      console.log('Subscribed to MQTT topic');
+    }
+  });
+
+  // Subscribe to dynamic topics with a wildcard based on the connectionId and gangNumber
+  mqttClient.subscribe('/devices/+/gangs/+/schedule', (err) => {
+    if (err) {
+      console.error('Error subscribing to MQTT topic', err);
+    } else {
+      console.log('Subscribed to MQTT schedule topic');
+    }
+  });
 });
 
-// Handle MQTT messages
+// Handle incoming messages
 mqttClient.on('message', async (topic, message) => {
-  // Convert message to string
-  const payload = message.toString();
+  console.log(`Received message on topic ${topic}: ${message.toString()}`);
 
-  // Check topic and toggle pins accordingly
-  if (topic === mqttTopicConnections) {
-    const connectionId = payload;
-    console.log(`Received connection ID: ${connectionId}`);
+  try {
+    if (topic === '/devices/setup') {
+      const connectionId = message.toString();
+      const device = await Device.findOne({ connectionId });
 
-    // Search for device by connection ID
-    const device = await Device.findOne({ connectionId });
-
-    if (device) {
-      const gang1Value = device.status.gang1;
-      const gang2Value = device.status.gang2;
-      // Publish initial state of each gang to their corresponding topic
-      if (gang1Value) {
-        mqttClient.publish(mqttTopicGang1, gang1Value);
+      if (device) {
+        const status = device.status;
+        for (const gangNumber in status) {
+          const gangStatus = status[gangNumber];
+          const gangTopic = `/devices/${connectionId}/gangs/${gangNumber}`;
+          mqttClient.publish(gangTopic, gangStatus);
+          console.log(
+            `Published initial status on topic ${gangTopic}: ${gangStatus}`
+          );
+        }
+      } else {
+        console.error(`Device with connectionId ${connectionId} not found`);
       }
-      if (gang2Value) {
-        mqttClient.publish(mqttTopicGang2, gang2Value);
+    } else if (topic.endsWith('/schedule')) {
+      const topicRegex = /^\/devices\/(.+)\/gangs\/(.+)\/schedule$/;
+      const match = topic.match(topicRegex);
+      if (!match) {
+        console.error('Invalid MQTT topic format');
+        return;
       }
-      console.log(`Device found: ${device.name}`);
-      // Extract initial state from device status
+      const [, connectionId, gangNumber] = match;
+      const scheduleData = JSON.parse(message.toString());
+
+      // Log the received schedule data
+      console.log(
+        `Received schedule data for ${connectionId} - ${gangNumber}:`
+      );
+      console.log(scheduleData);
+
+      // Check if the message originated from the device itself
+      const deviceOriginated = scheduleData.deviceOriginated || false;
+
+      if (!deviceOriginated) {
+        // Publish the received schedule data back to the same topic
+        const publishTopic = `/devices/${connectionId}/gangs/${gangNumber}/schedule`;
+        mqttClient.publish(
+          publishTopic,
+          JSON.stringify({ ...scheduleData, deviceOriginated: true }),
+          (err) => {
+            if (err) {
+              console.error('Error publishing MQTT message', err);
+            } else {
+              console.log(
+                `Published MQTT message on topic ${publishTopic}: ${message.toString()}`
+              );
+            }
+          }
+        );
+
+        // Process the schedule data and publish to the corresponding topic subscribed by the ESP
+        // ...
+      }
+    } else {
+      const topicRegex = /^\/devices\/(.+)\/gangs\/(.+)\/(on|off)$/;
+      const match = topic.match(topicRegex);
+      if (!match) {
+        console.error('Invalid MQTT topic format');
+        return;
+      }
+      const [, connectionId, gangNumber] = match;
+      const scheduleData = JSON.parse(message.toString());
+
+      // Log the received schedule data
+      console.log(
+        `Received schedule data for ${connectionId} - ${gangNumber}:`
+      );
+      console.log(scheduleData);
+
+      // Check if the message originated from the device itself
+      const deviceOriginated = scheduleData.deviceOriginated || false;
+
+      if (!deviceOriginated) {
+        // Publish the received schedule data back to the same topic
+        const publishTopic = `/devices/${connectionId}/gangs/${gangNumber}/schedule`;
+        mqttClient.publish(
+          publishTopic,
+          JSON.stringify({ ...scheduleData, deviceOriginated: true }),
+          (err) => {
+            if (err) {
+              console.error('Error publishing MQTT message', err);
+            } else {
+              console.log(
+                `Published MQTT message on topic ${publishTopic}: ${message.toString()}`
+              );
+            }
+          }
+        );
+
+        // Process the schedule data and publish to the corresponding topic subscribed by the ESP
+        // ...
+      }
     }
-  } else if (topic === mqttTopicGang1) {
-    if (payload === 'on') {
-      // Code to perform action when pinGang1 is turned on
-      console.log('pinGang1 turned on');
-    } else if (payload === 'off') {
-      // Code to perform action when pinGang1 is turned off
-      console.log('pinGang1 turned off');
-    }
-  } else if (topic === mqttTopicGang2) {
-    if (payload === 'on') {
-      // Code to perform action when pinGang2 is turned on
-      console.log('pinGang2 turned on');
-    } else if (payload === 'off') {
-      // Code to perform action when pinGang2 is turned off
-      console.log('pinGang2 turned off');
-    }
+  } catch (error) {
+    console.error(`Error handling MQTT message: ${error}`);
   }
 });
 
